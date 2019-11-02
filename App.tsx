@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import ShoppingList from './components/ShoppingList';
+import ShoppingList from './components/ShoppingList/ShoppingList';
 
 export default function App() {
   return (
