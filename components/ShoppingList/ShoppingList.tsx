@@ -1,9 +1,34 @@
-import React from 'react';
-import { View, Image, StyleSheet, Text, ScrollView, FlatList, Dimensions, TouchableWithoutFeedback } from 'react-native';
+import React, { useState } from 'react';
+import { View, Image, StyleSheet, Text, ScrollView, FlatList, Dimensions, TouchableWithoutFeedback, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { TapGestureHandler } from 'react-native-gesture-handler';
+import FoodItem from '../FoodItem/FoodItem';
+import { ReText } from 'react-native-redash';
+import { AntDesign } from '@expo/vector-icons';
 
-const { Value, useCode, set, cond, eq, Clock, add, stopClock, startClock, clockRunning, createAnimatedComponent, interpolate, Extrapolate, block } = Animated;
+const { Value, useCode, set, cond, eq, Clock, add, stopClock, startClock, clockRunning, createAnimatedComponent, interpolate, Extrapolate, block, greaterThan } = Animated;
+
+const AnimatedTextInput = createAnimatedComponent(TextInput);
+const AnimatedFoodItem = createAnimatedComponent(FoodItem);
+
+type Food = {
+    imageUri: string,
+    name: string,
+    price: number,
+    id: number
+}
+const foods: Array<Food> = [
+    {id: 1, name: "Zucchini", price: 1, imageUri: "https://bmexdi064h-flywheel.netdna-ssl.com/wp-content/uploads/2016/09/Chocolate-Pecan-Zucchini-Bread-17-2.jpg"},
+    {id: 2, name: "Squash", price: 2, imageUri: "https://i0.wp.com/images-prod.healthline.com/hlcmsresource/images/AN_images/types-of-squash-1296x728-kabocha.jpg?w=1155&h=1528"},
+    {id: 3, name: "Carrots", price: 5, imageUri: "https://www.jessicagavin.com/wp-content/uploads/2019/02/carrots-7-600x900.jpg"},
+    {id: 4, name: "Tomatoes", price: 3, imageUri: "https://i0.wp.com/images-prod.healthline.com/hlcmsresource/images/AN_images/tomatoes-1296x728-feature.jpg?w=1155&h=1528"},
+    {id: 5, name: "Grapes", price: 4, imageUri: "https://images-na.ssl-images-amazon.com/images/I/61uhuojj0eL._SX425_.jpg"},
+    {id: 6, name: "Zucchini", price: 1, imageUri: "https://bmexdi064h-flywheel.netdna-ssl.com/wp-content/uploads/2016/09/Chocolate-Pecan-Zucchini-Bread-17-2.jpg"},
+    {id: 7, name: "Squash", price: 2, imageUri: "https://i0.wp.com/images-prod.healthline.com/hlcmsresource/images/AN_images/types-of-squash-1296x728-kabocha.jpg?w=1155&h=1528"},
+    {id: 8, name: "Carrots", price: 5, imageUri: "https://www.jessicagavin.com/wp-content/uploads/2019/02/carrots-7-600x900.jpg"},
+    {id: 9, name: "Tomatoes", price: 3, imageUri: "https://i0.wp.com/images-prod.healthline.com/hlcmsresource/images/AN_images/tomatoes-1296x728-feature.jpg?w=1155&h=1528"},
+    {id: 10, name: "Grapes", price: 4, imageUri: "https://images-na.ssl-images-amazon.com/images/I/61uhuojj0eL._SX425_.jpg"}
+];
 
 const HEADER_MIN_HEIGHT = 75;
 const HEADER_MAX_HEIGHT = 200;
@@ -12,7 +37,11 @@ const HEADER_MARGIN_TOP = 50;
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
-const PickupView = () => {
+type PickupViewProps = {
+    backgroundColor: string
+}
+
+const PickupView = ({backgroundColor}: PickupViewProps) => {
     const scrollOffset = new Value(0);
 
     const headerHeight = interpolate(scrollOffset, {
@@ -72,13 +101,23 @@ const PickupView = () => {
     });
 
     const date = "Tuesday, May 4";
-    const loc  = "LOC";
-    const price = "$12.40"
+    const loc  = "DCRC";
+    const price = "$12.40";
+    
+    const testValue = new Value<number>(1);
+
+    const calculableQuantities = {
+
+    }
+
+    let displayQuantities = {
+
+    }
 
     return (
         <View style={styles.container}>
-            <TapGestureHandler onHandlerStateChange={() => {alert(headerHeight)}}>
-                <Animated.View style={[styles.card, {height: headerHeight}, {marginTop: headerMarginTop}, {borderRadius: cardBorderRadius}, {width: headerWidth}, {shadowRadius: shadowRadius, elevation: shadowRadius}, {zIndex: 4}]}>
+            <TapGestureHandler onHandlerStateChange={() => {testValue.setValue(10)}}>
+                <Animated.View style={[styles.card, {backgroundColor}, {height: headerHeight}, {marginTop: headerMarginTop}, {borderRadius: cardBorderRadius}, {width: headerWidth}, {shadowRadius: shadowRadius, elevation: shadowRadius}, {zIndex: 4}]}>
                     <Animated.Text style={[styles.pickupdate, {paddingTop: datePaddingTop}]}>{date}</Animated.Text>
                     <Animated.View style={styles.pickupinfo}>
                         <Animated.Text style={[styles.cardsubtitle, {opacity: excessCardInfoOpacity}]}>Pickup Location:</Animated.Text>
@@ -90,19 +129,38 @@ const PickupView = () => {
                 </Animated.View>
             </TapGestureHandler>
             <Animated.ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={1} style={{flex: 1, paddingTop: 100}}>
-                <View style={styles.listitem}><Text>1</Text></View>
-                <View style={styles.listitem}/>
-                <View style={styles.listitem}/>
-                <View style={styles.listitem}/>
-                <View style={styles.listitem}/>
-                <View style={styles.listitem}/>
-                <View style={styles.listitem}/>
-                <View style={styles.listitem}/>
-                <View style={styles.listitem}/>
-                <View style={styles.listitem}/>
-                <View style={styles.listitem}/>
-                <View style={styles.listitem}/>
-                <View style={styles.listitem}/>
+                <AnimatedTextInput text={testValue}/>
+                {foods.map(food => {
+                    if(!calculableQuantities[food.id]) { calculableQuantities[food.id] = 0 }
+                    if(!displayQuantities[food.id]) { displayQuantities[food.id] = new Value(0)}
+
+                    return (
+                        <View style={styles.foodItemContainer} key={food.id}>
+                            <Image source={{uri: food.imageUri}} style={styles.image}/>
+                            <Text style={styles.foodInfo}>{food.name} (${food.price} per lb)</Text>
+                            <View style={styles.right}></View>
+                            <TouchableWithoutFeedback onPress={() => {
+                                let q = displayQuantities[food.id];
+                                if(calculableQuantities[food.id] > 0) {
+                                    q.setValue(add(q, -1));
+                                    calculableQuantities[food.id]--;
+                                }
+                            }}>
+                                <AntDesign name="minuscircleo" size={20} color="black"/>
+                            </TouchableWithoutFeedback>
+                            <AnimatedTextInput style={[styles.foodInfo, {padding: 0}]} text={displayQuantities[food.id]} onChangeText={(text) => {
+                                calculableQuantities[food.id] = parseInt(text);
+                            }}/>
+                            <TouchableWithoutFeedback onPress={() => {
+                                calculableQuantities[food.id]++;
+                                let q = displayQuantities[food.id];
+                                q.setValue(add(q, 1));
+                            }}>
+                                <AntDesign name="pluscircleo" size={20} color="black" style={styles.righticon}/>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    )
+                })}
             </Animated.ScrollView>
         </View>
     )
@@ -141,33 +199,63 @@ const styles = StyleSheet.create({
         fontSize: 35,
         color: "white",
         paddingLeft: 10,
-        paddingTop: 10
+        paddingTop: 10,
     },
     pickupinfo: {
         flex: 1,
         justifyContent: "flex-end",
-        paddingLeft: 10
+        paddingLeft: 10,
     },
     cardsubtitle: {
         fontSize: 15,
         color: "white",
-        paddingLeft: 10
+        paddingLeft: 10,
     },
     pickupbottom: {
         display: "flex",
         flexDirection: "row",
-        paddingBottom: 10
+        paddingBottom: 10,
     },
     pickupprice: {
         flexGrow: 1,
         textAlign: "right",
         fontSize: 35,
         color: "white",
-        paddingRight: 15
+        paddingRight: 15,
     },
     pickuploc: {
         paddingLeft: 10,
         fontSize: 35,
         color: "white",
+    },
+    foodItemContainer: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "row",
+        paddingLeft: "3.5%",
+        paddingRight: "3.5%",
+        margin: "auto",
+        alignItems: "center",
+        paddingBottom: "5.5%"
+    },
+    foodInfo: {
+        color: "black",
+        fontFamily: "interthick",
+        fontSize: 17.5,
+        paddingLeft: "3.5%"
+    },
+    image: {
+        width: 80,
+        height: 80,
+        borderRadius: 8
+    },
+    right: {
+        flexGrow: 1,
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "flex-end"
+    },
+    righticon: {
+        paddingLeft: 12.5
     }
 });
