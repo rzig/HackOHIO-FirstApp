@@ -139,7 +139,7 @@ const PickupView = ({backgroundColor}: PickupViewProps) => {
                     </Animated.View>
                 </Animated.View>
             </TapGestureHandler>
-            <Animated.ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={1} style={{flex: 1, paddingTop: 60}}>
+            <Animated.ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={1} style={{paddingTop: 60}}>
                 {foods.map(food => {
                     if(!calculableQuantities[food.id]) { calculableQuantities[food.id] = 0 }
                     if(!displayQuantities[food.id]) { displayQuantities[food.id] = new Value(0)}
@@ -171,6 +171,13 @@ const PickupView = ({backgroundColor}: PickupViewProps) => {
                         </View>
                     )
                 })}
+                <View style={{height: 30}}></View>
+                <TouchableWithoutFeedback>
+                    <View style={[styles.paymentButton, {borderWidth: 3, borderColor: backgroundColor}]}>
+                        <Text style={[styles.paymentText, {color: backgroundColor}]}>Pay Now</Text>
+                    </View>
+                </TouchableWithoutFeedback>
+                <View style={{height: 75}}></View>
             </Animated.ScrollView>
         </View>
     )
@@ -181,7 +188,7 @@ export default PickupView;
 const styles = StyleSheet.create({
     container: {
         width: "100%",
-        height: 200,
+        // height: 200,
         flex: 1
     },
     card: {
@@ -273,5 +280,20 @@ const styles = StyleSheet.create({
         // flexGrow: 1,
         alignSelf: "flex-end",
         paddingRight: "30%"
+    },
+    paymentButton: {
+        borderRadius: 26,
+        width: "92.5%",
+        marginLeft: "auto",
+        marginRight: "auto",
+        height: 70,
+        marginTop: -50,
+        display: "flex",
+        alignItems: "center"
+    },
+    paymentText: {
+        fontSize: 35,
+        textAlign: "center",
+        paddingTop: 70 / 8
     }
 });
