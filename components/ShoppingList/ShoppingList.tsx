@@ -6,7 +6,7 @@ import FoodItem from '../FoodItem/FoodItem';
 import { ReText } from 'react-native-redash';
 import { AntDesign } from '@expo/vector-icons';
 
-const { Value, useCode, set, cond, eq, Clock, add, stopClock, startClock, clockRunning, createAnimatedComponent, interpolate, Extrapolate, block, greaterThan } = Animated;
+const { Value, useCode, set, cond, eq, Clock, add, stopClock, startClock, clockRunning, createAnimatedComponent, interpolate, Extrapolate, block, greaterThan, sub } = Animated;
 
 const AnimatedTextInput = createAnimatedComponent(TextInput);
 const AnimatedFoodItem = createAnimatedComponent(FoodItem);
@@ -96,7 +96,13 @@ const PickupView = ({backgroundColor}: PickupViewProps) => {
 
     const priceMarginTop = interpolate(headerHeight, {
         inputRange: [HEADER_MIN_HEIGHT, HEADER_MIN_HEIGHT + 30],
-        outputRange: [-38, 0],
+        outputRange: [-38.5, 0],
+        extrapolate: Extrapolate.CLAMP
+    });
+
+    const extraMarginTop = interpolate(priceMarginTop, {
+        inputRange: [-38.5, -30],
+        outputRange: [-5, 0],
         extrapolate: Extrapolate.CLAMP
     });
 
@@ -114,6 +120,8 @@ const PickupView = ({backgroundColor}: PickupViewProps) => {
 
     }
 
+    const totalPrice = new Value<number>(0);
+
     return (
         <View style={styles.container}>
             <TapGestureHandler onHandlerStateChange={() => {testValue.setValue(10)}}>
@@ -123,13 +131,15 @@ const PickupView = ({backgroundColor}: PickupViewProps) => {
                         <Animated.Text style={[styles.cardsubtitle, {opacity: excessCardInfoOpacity}]}>Pickup Location:</Animated.Text>
                         <Animated.View style={styles.pickupbottom}>
                             <Animated.Text style={[styles.pickuploc, {opacity: excessCardInfoOpacity}]}>{loc}</Animated.Text>
-                            <Animated.Text style={[styles.pickupprice, {marginTop: priceMarginTop}]}>{price}</Animated.Text>
+                            <Animated.View style={[styles.pickupBottomRight, {marginTop: priceMarginTop}]}>
+                                <Animated.Text style={[styles.pickupprice, {textAlign: "right", flexGrow: 1, marginRight: -15, top: extraMarginTop}]}>$</Animated.Text>
+                                <AnimatedTextInput style={[styles.pickupprice, {top: extraMarginTop}]} text={totalPrice} editable={false}/>
+                            </Animated.View>
                         </Animated.View>
                     </Animated.View>
                 </Animated.View>
             </TapGestureHandler>
-            <Animated.ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={1} style={{flex: 1, paddingTop: 100}}>
-                <AnimatedTextInput text={testValue}/>
+            <Animated.ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={1} style={{flex: 1, paddingTop: 60}}>
                 {foods.map(food => {
                     if(!calculableQuantities[food.id]) { calculableQuantities[food.id] = 0 }
                     if(!displayQuantities[food.id]) { displayQuantities[food.id] = new Value(0)}
@@ -144,17 +154,17 @@ const PickupView = ({backgroundColor}: PickupViewProps) => {
                                 if(calculableQuantities[food.id] > 0) {
                                     q.setValue(add(q, -1));
                                     calculableQuantities[food.id]--;
+                                    totalPrice.setValue(sub(totalPrice, food.price));
                                 }
                             }}>
                                 <AntDesign name="minuscircleo" size={20} color="black"/>
                             </TouchableWithoutFeedback>
-                            <AnimatedTextInput style={[styles.foodInfo, {padding: 0}]} text={displayQuantities[food.id]} onChangeText={(text) => {
-                                calculableQuantities[food.id] = parseInt(text);
-                            }}/>
+                            <AnimatedTextInput style={[styles.foodInfo, {padding: 0}]} text={displayQuantities[food.id]} editable={false}/>
                             <TouchableWithoutFeedback onPress={() => {
                                 calculableQuantities[food.id]++;
                                 let q = displayQuantities[food.id];
                                 q.setValue(add(q, 1));
+                                totalPrice.setValue(add(totalPrice, food.price));
                             }}>
                                 <AntDesign name="pluscircleo" size={20} color="black" style={styles.righticon}/>
                             </TouchableWithoutFeedback>
@@ -217,8 +227,6 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
     },
     pickupprice: {
-        flexGrow: 1,
-        textAlign: "right",
         fontSize: 35,
         color: "white",
         paddingRight: 15,
@@ -257,5 +265,13 @@ const styles = StyleSheet.create({
     },
     righticon: {
         paddingLeft: 12.5
+    },
+    pickupBottomRight: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "flex-end",
+        // flexGrow: 1,
+        alignSelf: "flex-end",
+        paddingRight: "30%"
     }
 });

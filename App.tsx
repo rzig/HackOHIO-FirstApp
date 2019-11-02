@@ -19,7 +19,7 @@ export default class App extends React.Component {
     if(this.state.fontsLoaded) {
       return (
         <View style={styles.container}>
-          <Swiper>
+          <Swiper dotStyle={{display: "none"}} activeDotStyle={{display: "none"}}>
             <ShoppingList backgroundColor={"#E88B76"}/>
             <ShoppingList backgroundColor={"#4A68B5"}/>
             <ShoppingList backgroundColor={"#309C75"}/>
