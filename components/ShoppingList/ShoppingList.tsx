@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Image, StyleSheet, Text, ScrollView, FlatList, Dimensions, TouchableWithoutFeedback, TextInput } from 'react-native';
+import { View, Image, StyleSheet, Text, ScrollView, FlatList, Dimensions, TouchableWithoutFeedback, TextInput, Alert } from 'react-native';
 import Animated, { Easing } from 'react-native-reanimated';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import FoodItem from '../FoodItem/FoodItem';
@@ -120,6 +120,12 @@ const PickupView = ({backgroundColor, date}: PickupViewProps) => {
         inputRange: [0, .17 * SCROLL_VALUE],
         outputRange: [1, 0],
         extrapolate: Extrapolate.CLAMP
+    });
+
+    const priceMarginLeft = interpolate(scrollOffset, {
+        inputRange: [0, SCROLL_VALUE],
+        outputRange: [0, 20],
+        extrapolate: Extrapolate.CLAMP
     })
 
     const loc  = "DCRC";
@@ -177,17 +183,19 @@ const PickupView = ({backgroundColor, date}: PickupViewProps) => {
 
     return (
         <View style={styles.container}>
-            <TouchableWithoutFeedback onPress={() => alert("68215")}>
+            <TouchableWithoutFeedback onPress={() => {
+                Alert.alert("Pickup code", "68215")
+            }}>
                 <Animated.View style={[styles.card, {backgroundColor}, {height: headerHeight}, {marginTop: headerMarginTop}, {borderRadius: cardBorderRadius}, {width: headerWidth}, {shadowRadius: shadowRadius, elevation: shadowRadius}, {zIndex: 4}]}>
                     <Animated.Text style={[styles.pickupdate, {paddingTop: datePaddingTop}]}>{date}</Animated.Text>
-                    <Animated.Text style={[styles.cardsubtitle, {padding: 5, marginTop: subtitleMarginTop, opacity: subtitleOpacity}]}>
-                        This pickup is brought to you by the Mid-Ohio Food Bank. Tap here for your code.
+                    <Animated.Text style={[styles.cardsubtitle, {padding: 5, marginTop: subtitleMarginTop, opacity: subtitleOpacity, paddingLeft: 12}]}>
+                        This pickup is brought to you by the Mid-Ohio Food Bank. Tap here for your pickup code.
                     </Animated.Text>
                     <Animated.View style={styles.pickupinfo}>
                         <Animated.Text style={[styles.cardsubtitle, {opacity: excessCardInfoOpacity}]}>Pickup Location:</Animated.Text>
                         <Animated.View style={styles.pickupbottom}>
                             <Animated.Text style={[styles.pickuploc, {opacity: excessCardInfoOpacity}]}>{loc}</Animated.Text>
-                            <Animated.View style={[styles.pickupBottomRight, {marginTop: priceMarginTop}]}>
+                            <Animated.View style={[styles.pickupBottomRight, {marginTop: priceMarginTop, left: priceMarginLeft}]}>
                                 <Animated.Text style={[styles.pickupprice, {textAlign: "right", flexGrow: 1, marginRight: -15, top: extraMarginTop}]}>$</Animated.Text>
                                 <AnimatedTextInput style={[styles.pickupprice, {top: extraMarginTop}]} text={totalPrice} editable={false}/>
                             </Animated.View>
@@ -376,7 +384,7 @@ const styles = StyleSheet.create({
     cardsubtitle: {
         fontSize: 15,
         color: "white",
-        paddingLeft: 10,
+        paddingLeft: 5,
     },
     pickupbottom: {
         display: "flex",
@@ -389,7 +397,7 @@ const styles = StyleSheet.create({
         paddingRight: 15,
     },
     pickuploc: {
-        paddingLeft: 10,
+        paddingLeft: 5,
         fontSize: 35,
         color: "white",
     },
