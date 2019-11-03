@@ -10,7 +10,8 @@ export default class App extends React.Component {
   }
   async componentDidMount() {
     await Font.loadAsync({
-      "interthick": require("./fonts/Inter-Black.otf")
+      "interthick": require("./fonts/Inter-Black.otf"),
+      "intermed": require("./fonts/Inter-Regular.otf")
     });
     this.setState({fontsLoaded: true});
   }

@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { View, Image, StyleSheet, Text, ScrollView, FlatList, Dimensions, TouchableWithoutFeedback, TextInput } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { Easing } from 'react-native-reanimated';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import FoodItem from '../FoodItem/FoodItem';
-import { ReText } from 'react-native-redash';
+import { ReText, timing } from 'react-native-redash';
 import { AntDesign } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 
 const { Value, useCode, set, cond, eq, Clock, add, stopClock, startClock, clockRunning, createAnimatedComponent, interpolate, Extrapolate, block, greaterThan, sub } = Animated;
 
 const AnimatedTextInput = createAnimatedComponent(TextInput);
 const AnimatedFoodItem = createAnimatedComponent(FoodItem);
+const AnimatedBlurView = createAnimatedComponent(BlurView);
 
 type Food = {
     imageUri: string,
@@ -36,6 +38,9 @@ const SCROLL_VALUE      = 150;
 const HEADER_MARGIN_TOP = 50;
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
+const SCREEN_HEIGHT = Dimensions.get("screen").height;
+
+const MODAL_HEIGHT = 325;
 
 type PickupViewProps = {
     backgroundColor: string
@@ -74,8 +79,6 @@ const PickupView = ({backgroundColor}: PickupViewProps) => {
         extrapolate: Extrapolate.CLAMP
     });
 
-    const isModalOpen = new Value<0|1>(0);
-
     const onScroll = Animated.event([
         {
             nativeEvent: {contentOffset: {y: scrollOffset}}
@@ -108,7 +111,6 @@ const PickupView = ({backgroundColor}: PickupViewProps) => {
 
     const date = "Tuesday, May 4";
     const loc  = "DCRC";
-    const price = "$12.40";
     
     const testValue = new Value<number>(1);
 
@@ -121,6 +123,45 @@ const PickupView = ({backgroundColor}: PickupViewProps) => {
     }
 
     const totalPrice = new Value<number>(0);
+
+    const isModalOpen = new Value<0|1>(0);
+    const modalOpacity = new Value<number>(0);
+    const modalZIndex = new Value<0|200>(0);
+    const modalAnimationProgress = new Value<number>(SCREEN_HEIGHT);
+
+    useCode(
+        cond(eq(isModalOpen, 1),
+            [set(modalOpacity, 1), set(modalZIndex, 200), set(modalAnimationProgress, timing({
+                from: 0,
+                to: 1,
+                easing: Easing.ease,
+                duration: 250
+            }))],
+            [set(modalAnimationProgress, timing({
+                from: 1,
+                to: 0,
+                easing: Easing.ease,
+                duration: 250
+            }))]
+        ), [isModalOpen]
+    )
+
+    const modalTop = interpolate(modalAnimationProgress, {
+        inputRange: [0, 1],
+        outputRange: [SCREEN_HEIGHT, SCREEN_HEIGHT - MODAL_HEIGHT],
+        extrapolate: Extrapolate.CLAMP
+    });
+
+    const blurIntensity = interpolate(modalAnimationProgress, {
+        inputRange: [0, .75, 1],
+        outputRange: [0, 50, 95],
+        extrapolate: Extrapolate.CLAMP
+    })
+
+    const blurZIndex = interpolate(modalAnimationProgress, {
+        inputRange: [0, 1],
+        outputRange: [0, 200]
+    });
 
     return (
         <View style={styles.container}>
@@ -139,7 +180,7 @@ const PickupView = ({backgroundColor}: PickupViewProps) => {
                     </Animated.View>
                 </Animated.View>
             </TapGestureHandler>
-            <Animated.ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={1} style={{paddingTop: 60}}>
+            <Animated.ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={1} style={{paddingTop: 60, zIndex: 100}}>
                 {foods.map(food => {
                     if(!calculableQuantities[food.id]) { calculableQuantities[food.id] = 0 }
                     if(!displayQuantities[food.id]) { displayQuantities[food.id] = new Value(0)}
@@ -172,16 +213,111 @@ const PickupView = ({backgroundColor}: PickupViewProps) => {
                     )
                 })}
                 <View style={{height: 30}}></View>
-                <TouchableWithoutFeedback>
+                <TouchableWithoutFeedback onPress={() => {isModalOpen.setValue(1)}}>
                     <View style={[styles.paymentButton, {borderWidth: 3, borderColor: backgroundColor}]}>
                         <Text style={[styles.paymentText, {color: backgroundColor}]}>Pay Now</Text>
                     </View>
                 </TouchableWithoutFeedback>
                 <View style={{height: 75}}></View>
             </Animated.ScrollView>
+            <TouchableWithoutFeedback onPress={() => {
+                isModalOpen.setValue(0);
+            }}>
+                <AnimatedBlurView style={{height: SCREEN_HEIGHT, width: SCREEN_WIDTH, position: "absolute", top: 0, left: 0, zIndex: blurZIndex, opacity: modalOpacity}} intensity={blurIntensity} tint={"light"}/>
+            </TouchableWithoutFeedback>
+            <Animated.View style={[mst.modalContainer, {opacity: modalOpacity, backgroundColor, zIndex: modalZIndex, top: modalTop}]}>
+                <View style={mst.modalTop}>
+                    <View style={{display: "flex", flexDirection: "row", flexGrow: 1}}>
+                        <Text style={mst.modalHeader}>Pay Now - $</Text>
+                        <AnimatedTextInput style={[{color: "white", fontSize: 35, flexGrow: 1, marginLeft: "-31%", marginTop: 20}]} text={totalPrice} editable={false}/>
+                    </View>
+                    <TouchableWithoutFeedback onPress={() => {
+                        isModalOpen.setValue(0);
+                    }}>
+                        <AntDesign name="closecircleo" size={35} color="white" style={{paddingTop: 20, paddingRight: 20}}/>
+                    </TouchableWithoutFeedback>
+                    {/* 68215 */}
+                </View>
+                <Text style={mst.modalBody}>
+                    Select one or more payment methods to use. You are approved for a
+                    $30 microloan.
+                </Text>
+                <View style={mst.row}>
+                    <View style={mst.payment}>
+                        <Text style={[mst.name, {color: backgroundColor}]}>
+                            Microloan
+                        </Text>
+                    </View>
+                    <View style={mst.payment}>
+                        <Text style={[mst.name, {color: backgroundColor}]}>
+                            EBT
+                        </Text>
+                    </View>
+                </View>
+                <View style={mst.row}>
+                    <View style={mst.payment}>
+                        <Text style={[mst.name, {color: backgroundColor}]}>
+                            Credit
+                        </Text>
+                    </View>
+                    <View style={mst.payment}>
+                        <Text style={[mst.name, {color: backgroundColor}]}>
+                            Check
+                        </Text>
+                    </View>
+                </View>
+            </Animated.View>
         </View>
     )
 }
+
+const mst = StyleSheet.create({
+    modalContainer: {
+        position: "absolute",
+        width: SCREEN_WIDTH,
+        height: MODAL_HEIGHT
+    },
+    modalHeader: {
+        paddingTop: 20,
+        paddingLeft: 20,
+        fontSize: 35,
+        color: "white",
+        flexGrow: 1
+    },
+    modalTop: {
+        display: "flex",
+        flexDirection: "row"
+    },
+    modalBody: {
+        color: "white",
+        fontSize: 18,
+        padding: 20,
+        fontFamily: "intermed"
+    },
+    row: {
+        display: "flex",
+        paddingLeft: 20,
+        paddingRight: 20,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: 20
+    },
+    payment: {
+        backgroundColor: "white",
+        borderRadius: 16,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "45%",
+        height: 65,
+        padding: 10
+    },
+    name: {
+        fontSize: 20,
+        textAlign: "center",
+        fontFamily: "intermed"
+    }
+})
 
 export default PickupView;
 
