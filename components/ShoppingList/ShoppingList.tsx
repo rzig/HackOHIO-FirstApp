@@ -177,7 +177,7 @@ const PickupView = ({backgroundColor, date}: PickupViewProps) => {
 
     return (
         <View style={styles.container}>
-            <TapGestureHandler onHandlerStateChange={() => {testValue.setValue(10)}}>
+            <TouchableWithoutFeedback onPress={() => alert("68215")}>
                 <Animated.View style={[styles.card, {backgroundColor}, {height: headerHeight}, {marginTop: headerMarginTop}, {borderRadius: cardBorderRadius}, {width: headerWidth}, {shadowRadius: shadowRadius, elevation: shadowRadius}, {zIndex: 4}]}>
                     <Animated.Text style={[styles.pickupdate, {paddingTop: datePaddingTop}]}>{date}</Animated.Text>
                     <Animated.Text style={[styles.cardsubtitle, {padding: 5, marginTop: subtitleMarginTop, opacity: subtitleOpacity}]}>
@@ -194,7 +194,7 @@ const PickupView = ({backgroundColor, date}: PickupViewProps) => {
                         </Animated.View>
                     </Animated.View>
                 </Animated.View>
-            </TapGestureHandler>
+            </TouchableWithoutFeedback>
             <Animated.ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} onScroll={onScroll} scrollEventThrottle={1} style={{paddingTop: 60, zIndex: 100}}>
                 {foods.map(food => {
                     if(!calculableQuantities[food.id]) { calculableQuantities[food.id] = 0 }
@@ -251,7 +251,6 @@ const PickupView = ({backgroundColor, date}: PickupViewProps) => {
                     }}>
                         <AntDesign name="closecircleo" size={35} color="white" style={{paddingTop: 20, paddingRight: 20}}/>
                     </TouchableWithoutFeedback>
-                    {/* 68215 */}
                 </View>
                 <Text style={mst.modalBody}>
                     Select one or more payment methods to use. You are approved for a
