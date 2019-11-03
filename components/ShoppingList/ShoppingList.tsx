@@ -43,10 +43,11 @@ const SCREEN_HEIGHT = Dimensions.get("screen").height;
 const MODAL_HEIGHT = 325;
 
 type PickupViewProps = {
-    backgroundColor: string
+    backgroundColor: string,
+    date: string
 }
 
-const PickupView = ({backgroundColor}: PickupViewProps) => {
+const PickupView = ({backgroundColor, date}: PickupViewProps) => {
     const scrollOffset = new Value(0);
 
     const headerHeight = interpolate(scrollOffset, {
@@ -109,7 +110,18 @@ const PickupView = ({backgroundColor}: PickupViewProps) => {
         extrapolate: Extrapolate.CLAMP
     });
 
-    const date = "Tuesday, May 4";
+    const subtitleMarginTop = interpolate(scrollOffset, {
+        inputRange: [0, .2 * SCROLL_VALUE],
+        outputRange: [0, -50],
+        extrapolate: Extrapolate.CLAMP
+    })
+
+    const subtitleOpacity = interpolate(scrollOffset, {
+        inputRange: [0, .17 * SCROLL_VALUE],
+        outputRange: [1, 0],
+        extrapolate: Extrapolate.CLAMP
+    })
+
     const loc  = "DCRC";
     
     const testValue = new Value<number>(1);
@@ -168,6 +180,9 @@ const PickupView = ({backgroundColor}: PickupViewProps) => {
             <TapGestureHandler onHandlerStateChange={() => {testValue.setValue(10)}}>
                 <Animated.View style={[styles.card, {backgroundColor}, {height: headerHeight}, {marginTop: headerMarginTop}, {borderRadius: cardBorderRadius}, {width: headerWidth}, {shadowRadius: shadowRadius, elevation: shadowRadius}, {zIndex: 4}]}>
                     <Animated.Text style={[styles.pickupdate, {paddingTop: datePaddingTop}]}>{date}</Animated.Text>
+                    <Animated.Text style={[styles.cardsubtitle, {padding: 5, marginTop: subtitleMarginTop, opacity: subtitleOpacity}]}>
+                        This pickup is brought to you by the Mid-Ohio Food Bank. Tap here for your code.
+                    </Animated.Text>
                     <Animated.View style={styles.pickupinfo}>
                         <Animated.Text style={[styles.cardsubtitle, {opacity: excessCardInfoOpacity}]}>Pickup Location:</Animated.Text>
                         <Animated.View style={styles.pickupbottom}>

@@ -21,9 +21,9 @@ export default class App extends React.Component {
       return (
         <View style={styles.container}>
           <Swiper dotStyle={{display: "none"}} activeDotStyle={{display: "none"}}>
-            <ShoppingList backgroundColor={"#E88B76"}/>
-            <ShoppingList backgroundColor={"#4A68B5"}/>
-            <ShoppingList backgroundColor={"#309C75"}/>
+            <ShoppingList backgroundColor={"#E88B76"} date="Sunday, Nov 3"/>
+            <ShoppingList backgroundColor={"#4A68B5"} date="Wednesday, Nov 13"/>
+            <ShoppingList backgroundColor={"#309C75"} date="Saturday, Nov 16"/>
           </Swiper>
         </View>
       )
