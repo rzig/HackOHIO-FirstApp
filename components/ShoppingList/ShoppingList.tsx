@@ -21,15 +21,15 @@ type Food = {
 }
 const foods: Array<Food> = [
     {id: 1, name: "Zucchini", price: 1, imageUri: "https://bmexdi064h-flywheel.netdna-ssl.com/wp-content/uploads/2016/09/Chocolate-Pecan-Zucchini-Bread-17-2.jpg"},
-    {id: 2, name: "Squash", price: 2, imageUri: "https://i0.wp.com/images-prod.healthline.com/hlcmsresource/images/AN_images/types-of-squash-1296x728-kabocha.jpg?w=1155&h=1528"},
-    {id: 3, name: "Carrots", price: 5, imageUri: "https://www.jessicagavin.com/wp-content/uploads/2019/02/carrots-7-600x900.jpg"},
+    {id: 3, name: "Peppers", price: 1, imageUri: "https://www.almanac.com/sites/default/files/styles/primary_image_in_article/public/image_nodes/bell-peppers-assorted-crop.jpg?itok=fchiyU7L"},
     {id: 4, name: "Tomatoes", price: 3, imageUri: "https://i0.wp.com/images-prod.healthline.com/hlcmsresource/images/AN_images/tomatoes-1296x728-feature.jpg?w=1155&h=1528"},
     {id: 5, name: "Grapes", price: 4, imageUri: "https://images-na.ssl-images-amazon.com/images/I/61uhuojj0eL._SX425_.jpg"},
-    {id: 6, name: "Zucchini", price: 1, imageUri: "https://bmexdi064h-flywheel.netdna-ssl.com/wp-content/uploads/2016/09/Chocolate-Pecan-Zucchini-Bread-17-2.jpg"},
+    {id: 6, name: "Kale", price: 2, imageUri: "https://images-na.ssl-images-amazon.com/images/I/71EkyWo-vZL._SX425_.jpg"},
     {id: 7, name: "Squash", price: 2, imageUri: "https://i0.wp.com/images-prod.healthline.com/hlcmsresource/images/AN_images/types-of-squash-1296x728-kabocha.jpg?w=1155&h=1528"},
-    {id: 8, name: "Carrots", price: 5, imageUri: "https://www.jessicagavin.com/wp-content/uploads/2019/02/carrots-7-600x900.jpg"},
-    {id: 9, name: "Tomatoes", price: 3, imageUri: "https://i0.wp.com/images-prod.healthline.com/hlcmsresource/images/AN_images/tomatoes-1296x728-feature.jpg?w=1155&h=1528"},
-    {id: 10, name: "Grapes", price: 4, imageUri: "https://images-na.ssl-images-amazon.com/images/I/61uhuojj0eL._SX425_.jpg"}
+    {id: 8, name: "Pear", price: 1, imageUri: "https://upload.wikimedia.org/wikipedia/commons/0/0b/D%27anjou_pear.jpg"},
+    {id: 9, name: "Broccoli", price: 2, imageUri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbNQZkhTJL-vKL_MP_kSGC6YIGv7m3vtuy2PyjbCtm88dHczWK2A&s"},
+    {id: 10, name: "Plum", price: 1, imageUri: "https://images.unsplash.com/photo-1518834903818-7d1557333fda?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEyMDd9"},
+    {id: 2, name: "Cherries", price: 2, imageUri: "https://draxe.com/wp-content/uploads/2018/11/CherriesHeader.jpg"},
 ];
 
 const HEADER_MIN_HEIGHT = 75;
